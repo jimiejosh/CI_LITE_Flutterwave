@@ -54,7 +54,8 @@ software availability and distribution.
 
 		View sample controller code below
 ```php
-<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 class Flutterwave extends CI_Controller {
 
 	 
@@ -62,24 +63,31 @@ class Flutterwave extends CI_Controller {
 
 	 function __construct()
 	  {
-	  	parent::__construct(); 	  
-		$this->load->helper('url');
-		$this->load->library('session'); 
+	    parent::__construct(); 
+			  
+			$this->load->helper('url');
+			$this->load->library('session'); 
 		$this->load->library('form_validation');
-		$this->config->load('flutterwave', TRUE); 
-		$this->load->model('flutterwave_model');  
+		$this->config->load('flutterwave', TRUE); //or instead your file name.
+			$this->load->model('flutterwave_model');  
+
+		 //  $this->output->enable_profiler(TRUE);
 	  }
 
 
-function index(){
+function index($ref = false){
  
+	die('Invalid Reference Provided' );  
+	} 
+	
+function pay($ref = false){
+ if (! $ref){ 
+	die('Invalid Reference Provided' );  
+	} 
 	//generate payment link
-	$payment_link = $this->flutterwave_model->getpaymentlink( false,false, false ,'demo' ,'NGN',  'NG' );
- 	$newinvoice = array(
-		//add all the values needed for the invoice here
-		);
-	 $this->flutterwave_model->insert_invoice( $newinvoice);
-	redirect($payment_link);
+	$payment_link = $this->flutterwave_model->pay( $ref);
+ 	 
+	if($payment_link['status'] == true ){ redirect( $payment_link['msg']); } else { echo   $payment_link['msg'] ; }
 }
 
 
@@ -99,7 +107,7 @@ function verify(){
 
 
 }
-	
+}	
 	
 ```
 
